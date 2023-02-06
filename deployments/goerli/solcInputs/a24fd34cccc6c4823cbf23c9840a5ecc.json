@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/BuyMeACoffee.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.17;\n\ncontract BuyMeACoffee {\n    //Event to emit when a Memo is created.abi\n    event NewMemo(\n        address indexed from,\n        uint256 timestamp,\n        string name,\n        string message\n    );\n\n    //Memo struct.\n    struct Memo {\n        address from;\n        uint256 timestamp;\n        string name;\n        string message;\n    }\n\n    //List of all memos received from friends;\n    Memo[] memos;\n\n    //address of contract deployer.\n    address payable private owner;\n\n    //Deploy logic\n    constructor() {\n        owner = payable(msg.sender);\n    }\n\n    /**\n     * @dev buy a coffee from contract owner\n     * @param _name name of the coffee buyer\n     * @param _message a nice message from the coffee buyer\n     */\n\n    function buyCoffee(\n        string memory _name,\n        string memory _message\n    ) public payable {\n        require(msg.value > 0, \"can't buy coffee with 0 eth\");\n        memos.push(Memo(msg.sender, block.timestamp, _name, _message));\n        emit NewMemo(msg.sender, block.timestamp, _name, _message);\n    }\n\n\n    /**\n     * @dev this will check the request sender is owner or not\n     */\n    modifier is_owner(){\n        require(msg.sender==owner,\"you are not the owner, so you can't withdraw\");\n        _;\n    }\n\n    /**\n     * @dev send the entrie balance stored in this contract to the owner\n     */\n\n    function withdrawTips() public is_owner{\n        require(owner.send(address(this).balance));\n    }\n\n    /**\n     * @dev retrieve all the memos received and stored on the blockchain.\n     */\n    function getMemos()public view returns(Memo[] memory){\n        return memos;\n    }\n    function getOwner()public view returns(address){\n        return owner;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
